@@ -1,0 +1,14 @@
+# Data files
+*.csv
+*.zip
+
+# Output files
+*.png
+*.pdf
+*.jpeg
+*.jpg
+
+# R files
+.Rhistory
+.RData
+.Rproj.user
