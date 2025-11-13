@@ -1,0 +1,419 @@
+{
+  "metadata": {
+    "dbt_schema_version": "https://schemas.getdbt.com/dbt/catalog/v1.json",
+    "dbt_version": "1.7.0",
+    "generated_at": "2024-01-15T10:35:00.000000Z",
+    "invocation_id": "abc123"
+  },
+  "nodes": {
+    "model.sample_project.customers": {
+      "metadata": {
+        "type": "BASE TABLE",
+        "schema": "production",
+        "name": "customers",
+        "database": "analytics",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "customer_id": {
+          "type": "integer",
+          "comment": "Primary key for customers",
+          "index": 1,
+          "name": "customer_id"
+        },
+        "email": {
+          "type": "character varying",
+          "comment": "Customer email address",
+          "index": 2,
+          "name": "email"
+        },
+        "first_name": {
+          "type": "character varying",
+          "comment": "Customer first name",
+          "index": 3,
+          "name": "first_name"
+        },
+        "last_name": {
+          "type": "character varying",
+          "comment": "Customer last name",
+          "index": 4,
+          "name": "last_name"
+        },
+        "created_at": {
+          "type": "timestamp without time zone",
+          "comment": "Timestamp when customer was created",
+          "index": 5,
+          "name": "created_at"
+        }
+      },
+      "stats": {
+        "has_stats": {
+          "id": "has_stats",
+          "label": "Has Stats?",
+          "value": true,
+          "include": false,
+          "description": "Indicates whether there are statistics for this table"
+        },
+        "row_count": {
+          "id": "row_count",
+          "label": "Row Count",
+          "value": 15234,
+          "include": true,
+          "description": "Approximate count of rows in this table"
+        },
+        "bytes": {
+          "id": "bytes",
+          "label": "Approximate Size",
+          "value": 524288,
+          "include": true,
+          "description": "Approximate size of table as reported by the database"
+        }
+      },
+      "unique_id": "model.sample_project.customers"
+    },
+    "model.sample_project.orders": {
+      "metadata": {
+        "type": "BASE TABLE",
+        "schema": "production",
+        "name": "orders",
+        "database": "analytics",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "order_id": {
+          "type": "integer",
+          "comment": "Primary key for orders",
+          "index": 1,
+          "name": "order_id"
+        },
+        "customer_id": {
+          "type": "integer",
+          "comment": "Foreign key to customers",
+          "index": 2,
+          "name": "customer_id"
+        },
+        "order_date": {
+          "type": "date",
+          "comment": "Date the order was placed",
+          "index": 3,
+          "name": "order_date"
+        },
+        "total_amount": {
+          "type": "numeric",
+          "comment": "Total order amount",
+          "index": 4,
+          "name": "total_amount"
+        },
+        "status": {
+          "type": "character varying",
+          "comment": "Order status",
+          "index": 5,
+          "name": "status"
+        }
+      },
+      "stats": {
+        "has_stats": {
+          "id": "has_stats",
+          "label": "Has Stats?",
+          "value": true,
+          "include": false,
+          "description": "Indicates whether there are statistics for this table"
+        },
+        "row_count": {
+          "id": "row_count",
+          "label": "Row Count",
+          "value": 45678,
+          "include": true,
+          "description": "Approximate count of rows in this table"
+        },
+        "bytes": {
+          "id": "bytes",
+          "label": "Approximate Size",
+          "value": 1048576,
+          "include": true,
+          "description": "Approximate size of table as reported by the database"
+        }
+      },
+      "unique_id": "model.sample_project.orders"
+    },
+    "model.sample_project.order_items": {
+      "metadata": {
+        "type": "BASE TABLE",
+        "schema": "production",
+        "name": "order_items",
+        "database": "analytics",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "order_item_id": {
+          "type": "integer",
+          "comment": "Primary key for order items",
+          "index": 1,
+          "name": "order_item_id"
+        },
+        "order_id": {
+          "type": "integer",
+          "comment": "Foreign key to orders",
+          "index": 2,
+          "name": "order_id"
+        },
+        "product_id": {
+          "type": "integer",
+          "comment": "Foreign key to products",
+          "index": 3,
+          "name": "product_id"
+        },
+        "quantity": {
+          "type": "integer",
+          "comment": "Quantity ordered",
+          "index": 4,
+          "name": "quantity"
+        },
+        "unit_price": {
+          "type": "numeric",
+          "comment": "Price per unit",
+          "index": 5,
+          "name": "unit_price"
+        }
+      },
+      "stats": {
+        "has_stats": {
+          "id": "has_stats",
+          "label": "Has Stats?",
+          "value": true,
+          "include": false,
+          "description": "Indicates whether there are statistics for this table"
+        },
+        "row_count": {
+          "id": "row_count",
+          "label": "Row Count",
+          "value": 123456,
+          "include": true,
+          "description": "Approximate count of rows in this table"
+        },
+        "bytes": {
+          "id": "bytes",
+          "label": "Approximate Size",
+          "value": 2097152,
+          "include": true,
+          "description": "Approximate size of table as reported by the database"
+        }
+      },
+      "unique_id": "model.sample_project.order_items"
+    },
+    "model.sample_project.products": {
+      "metadata": {
+        "type": "BASE TABLE",
+        "schema": "production",
+        "name": "products",
+        "database": "analytics",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "product_id": {
+          "type": "integer",
+          "comment": "Primary key for products",
+          "index": 1,
+          "name": "product_id"
+        },
+        "product_name": {
+          "type": "character varying",
+          "comment": "Product name",
+          "index": 2,
+          "name": "product_name"
+        },
+        "category": {
+          "type": "character varying",
+          "comment": "Product category",
+          "index": 3,
+          "name": "category"
+        },
+        "price": {
+          "type": "numeric",
+          "comment": "Product price",
+          "index": 4,
+          "name": "price"
+        }
+      },
+      "stats": {
+        "has_stats": {
+          "id": "has_stats",
+          "label": "Has Stats?",
+          "value": true,
+          "include": false,
+          "description": "Indicates whether there are statistics for this table"
+        },
+        "row_count": {
+          "id": "row_count",
+          "label": "Row Count",
+          "value": 567,
+          "include": true,
+          "description": "Approximate count of rows in this table"
+        },
+        "bytes": {
+          "id": "bytes",
+          "label": "Approximate Size",
+          "value": 131072,
+          "include": true,
+          "description": "Approximate size of table as reported by the database"
+        }
+      },
+      "unique_id": "model.sample_project.products"
+    },
+    "model.sample_project.customer_orders_summary": {
+      "metadata": {
+        "type": "VIEW",
+        "schema": "production",
+        "name": "customer_orders_summary",
+        "database": "analytics",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "customer_id": {
+          "type": "integer",
+          "comment": "Customer identifier",
+          "index": 1,
+          "name": "customer_id"
+        },
+        "email": {
+          "type": "character varying",
+          "comment": "Customer email",
+          "index": 2,
+          "name": "email"
+        },
+        "first_name": {
+          "type": "character varying",
+          "comment": "Customer first name",
+          "index": 3,
+          "name": "first_name"
+        },
+        "last_name": {
+          "type": "character varying",
+          "comment": "Customer last name",
+          "index": 4,
+          "name": "last_name"
+        },
+        "total_orders": {
+          "type": "bigint",
+          "comment": "Total number of orders",
+          "index": 5,
+          "name": "total_orders"
+        },
+        "total_spent": {
+          "type": "numeric",
+          "comment": "Total amount spent",
+          "index": 6,
+          "name": "total_spent"
+        },
+        "first_order_date": {
+          "type": "date",
+          "comment": "Date of first order",
+          "index": 7,
+          "name": "first_order_date"
+        },
+        "last_order_date": {
+          "type": "date",
+          "comment": "Date of last order",
+          "index": 8,
+          "name": "last_order_date"
+        }
+      },
+      "stats": {
+        "has_stats": {
+          "id": "has_stats",
+          "label": "Has Stats?",
+          "value": false,
+          "include": false,
+          "description": "Indicates whether there are statistics for this table"
+        }
+      },
+      "unique_id": "model.sample_project.customer_orders_summary"
+    },
+    "model.sample_project.product_sales_summary": {
+      "metadata": {
+        "type": "VIEW",
+        "schema": "production",
+        "name": "product_sales_summary",
+        "database": "analytics",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "product_id": {
+          "type": "integer",
+          "comment": "Product identifier",
+          "index": 1,
+          "name": "product_id"
+        },
+        "product_name": {
+          "type": "character varying",
+          "comment": "Product name",
+          "index": 2,
+          "name": "product_name"
+        },
+        "category": {
+          "type": "character varying",
+          "comment": "Product category",
+          "index": 3,
+          "name": "category"
+        },
+        "total_quantity_sold": {
+          "type": "bigint",
+          "comment": "Total quantity sold",
+          "index": 4,
+          "name": "total_quantity_sold"
+        },
+        "total_revenue": {
+          "type": "numeric",
+          "comment": "Total revenue from product",
+          "index": 5,
+          "name": "total_revenue"
+        }
+      },
+      "stats": {
+        "has_stats": {
+          "id": "has_stats",
+          "label": "Has Stats?",
+          "value": false,
+          "include": false,
+          "description": "Indicates whether there are statistics for this table"
+        }
+      },
+      "unique_id": "model.sample_project.product_sales_summary"
+    }
+  },
+  "sources": {
+    "source.sample_project.raw_db.raw_customers": {
+      "metadata": {
+        "type": "BASE TABLE",
+        "schema": "raw_db",
+        "name": "raw_customers",
+        "database": "raw_data",
+        "comment": null,
+        "owner": null
+      },
+      "columns": {
+        "id": {
+          "type": "integer",
+          "comment": null,
+          "index": 1,
+          "name": "id"
+        },
+        "email": {
+          "type": "character varying",
+          "comment": null,
+          "index": 2,
+          "name": "email"
+        }
+      },
+      "stats": {},
+      "unique_id": "source.sample_project.raw_db.raw_customers"
+    }
+  },
+  "errors": null
+}

@@ -1,0 +1,497 @@
+{
+  "metadata": {
+    "dbt_schema_version": "https://schemas.getdbt.com/dbt/manifest/v11.json",
+    "dbt_version": "1.7.0",
+    "generated_at": "2024-01-15T10:30:00.000000Z",
+    "invocation_id": "abc123",
+    "project_name": "sample_project"
+  },
+  "nodes": {
+    "model.sample_project.customers": {
+      "database": "analytics",
+      "schema": "production",
+      "name": "customers",
+      "resource_type": "model",
+      "package_name": "sample_project",
+      "path": "customers.sql",
+      "original_file_path": "models/customers.sql",
+      "unique_id": "model.sample_project.customers",
+      "fqn": ["sample_project", "customers"],
+      "alias": "customers",
+      "checksum": {
+        "name": "sha256",
+        "checksum": "abc123"
+      },
+      "config": {
+        "enabled": true,
+        "materialized": "table",
+        "tags": ["pii", "core"]
+      },
+      "tags": ["pii", "core"],
+      "description": "Customer dimension table with demographic information",
+      "columns": {
+        "customer_id": {
+          "name": "customer_id",
+          "description": "Primary key for customers",
+          "data_type": "integer"
+        },
+        "email": {
+          "name": "email",
+          "description": "Customer email address",
+          "data_type": "varchar"
+        },
+        "first_name": {
+          "name": "first_name",
+          "description": "Customer first name",
+          "data_type": "varchar"
+        },
+        "last_name": {
+          "name": "last_name",
+          "description": "Customer last name",
+          "data_type": "varchar"
+        },
+        "created_at": {
+          "name": "created_at",
+          "description": "Timestamp when customer was created",
+          "data_type": "timestamp"
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "source.sample_project.raw_db.raw_customers"
+        ]
+      }
+    },
+    "model.sample_project.orders": {
+      "database": "analytics",
+      "schema": "production",
+      "name": "orders",
+      "resource_type": "model",
+      "package_name": "sample_project",
+      "path": "orders.sql",
+      "original_file_path": "models/orders.sql",
+      "unique_id": "model.sample_project.orders",
+      "fqn": ["sample_project", "orders"],
+      "alias": "orders",
+      "checksum": {
+        "name": "sha256",
+        "checksum": "def456"
+      },
+      "config": {
+        "enabled": true,
+        "materialized": "incremental",
+        "tags": ["transaction"]
+      },
+      "tags": ["transaction"],
+      "description": "Orders fact table with customer references",
+      "columns": {
+        "order_id": {
+          "name": "order_id",
+          "description": "Primary key for orders",
+          "data_type": "integer"
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "description": "Foreign key to customers",
+          "data_type": "integer"
+        },
+        "order_date": {
+          "name": "order_date",
+          "description": "Date the order was placed",
+          "data_type": "date"
+        },
+        "total_amount": {
+          "name": "total_amount",
+          "description": "Total order amount",
+          "data_type": "decimal"
+        },
+        "status": {
+          "name": "status",
+          "description": "Order status",
+          "data_type": "varchar"
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "source.sample_project.raw_db.raw_orders",
+          "model.sample_project.customers"
+        ]
+      }
+    },
+    "model.sample_project.order_items": {
+      "database": "analytics",
+      "schema": "production",
+      "name": "order_items",
+      "resource_type": "model",
+      "package_name": "sample_project",
+      "path": "order_items.sql",
+      "original_file_path": "models/order_items.sql",
+      "unique_id": "model.sample_project.order_items",
+      "fqn": ["sample_project", "order_items"],
+      "alias": "order_items",
+      "checksum": {
+        "name": "sha256",
+        "checksum": "ghi789"
+      },
+      "config": {
+        "enabled": true,
+        "materialized": "table",
+        "tags": ["transaction"]
+      },
+      "tags": ["transaction"],
+      "description": "Line items for each order",
+      "columns": {
+        "order_item_id": {
+          "name": "order_item_id",
+          "description": "Primary key for order items",
+          "data_type": "integer"
+        },
+        "order_id": {
+          "name": "order_id",
+          "description": "Foreign key to orders",
+          "data_type": "integer"
+        },
+        "product_id": {
+          "name": "product_id",
+          "description": "Foreign key to products",
+          "data_type": "integer"
+        },
+        "quantity": {
+          "name": "quantity",
+          "description": "Quantity ordered",
+          "data_type": "integer"
+        },
+        "unit_price": {
+          "name": "unit_price",
+          "description": "Price per unit",
+          "data_type": "decimal"
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "source.sample_project.raw_db.raw_order_items",
+          "model.sample_project.orders",
+          "model.sample_project.products"
+        ]
+      }
+    },
+    "model.sample_project.products": {
+      "database": "analytics",
+      "schema": "production",
+      "name": "products",
+      "resource_type": "model",
+      "package_name": "sample_project",
+      "path": "products.sql",
+      "original_file_path": "models/products.sql",
+      "unique_id": "model.sample_project.products",
+      "fqn": ["sample_project", "products"],
+      "alias": "products",
+      "checksum": {
+        "name": "sha256",
+        "checksum": "jkl012"
+      },
+      "config": {
+        "enabled": true,
+        "materialized": "table",
+        "tags": ["dimension"]
+      },
+      "tags": ["dimension"],
+      "description": "Product dimension table",
+      "columns": {
+        "product_id": {
+          "name": "product_id",
+          "description": "Primary key for products",
+          "data_type": "integer"
+        },
+        "product_name": {
+          "name": "product_name",
+          "description": "Product name",
+          "data_type": "varchar"
+        },
+        "category": {
+          "name": "category",
+          "description": "Product category",
+          "data_type": "varchar"
+        },
+        "price": {
+          "name": "price",
+          "description": "Product price",
+          "data_type": "decimal"
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "source.sample_project.raw_db.raw_products"
+        ]
+      }
+    },
+    "model.sample_project.customer_orders_summary": {
+      "database": "analytics",
+      "schema": "production",
+      "name": "customer_orders_summary",
+      "resource_type": "model",
+      "package_name": "sample_project",
+      "path": "customer_orders_summary.sql",
+      "original_file_path": "models/customer_orders_summary.sql",
+      "unique_id": "model.sample_project.customer_orders_summary",
+      "fqn": ["sample_project", "customer_orders_summary"],
+      "alias": "customer_orders_summary",
+      "checksum": {
+        "name": "sha256",
+        "checksum": "mno345"
+      },
+      "config": {
+        "enabled": true,
+        "materialized": "view",
+        "tags": ["reporting", "dashboard"]
+      },
+      "tags": ["reporting", "dashboard"],
+      "description": "Summary of customer order metrics",
+      "columns": {
+        "customer_id": {
+          "name": "customer_id",
+          "description": "Customer identifier",
+          "data_type": "integer"
+        },
+        "email": {
+          "name": "email",
+          "description": "Customer email",
+          "data_type": "varchar"
+        },
+        "first_name": {
+          "name": "first_name",
+          "description": "Customer first name",
+          "data_type": "varchar"
+        },
+        "last_name": {
+          "name": "last_name",
+          "description": "Customer last name",
+          "data_type": "varchar"
+        },
+        "total_orders": {
+          "name": "total_orders",
+          "description": "Total number of orders",
+          "data_type": "integer"
+        },
+        "total_spent": {
+          "name": "total_spent",
+          "description": "Total amount spent",
+          "data_type": "decimal"
+        },
+        "first_order_date": {
+          "name": "first_order_date",
+          "description": "Date of first order",
+          "data_type": "date"
+        },
+        "last_order_date": {
+          "name": "last_order_date",
+          "description": "Date of last order",
+          "data_type": "date"
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "model.sample_project.customers",
+          "model.sample_project.orders"
+        ]
+      }
+    },
+    "model.sample_project.product_sales_summary": {
+      "database": "analytics",
+      "schema": "production",
+      "name": "product_sales_summary",
+      "resource_type": "model",
+      "package_name": "sample_project",
+      "path": "product_sales_summary.sql",
+      "original_file_path": "models/product_sales_summary.sql",
+      "unique_id": "model.sample_project.product_sales_summary",
+      "fqn": ["sample_project", "product_sales_summary"],
+      "alias": "product_sales_summary",
+      "checksum": {
+        "name": "sha256",
+        "checksum": "pqr678"
+      },
+      "config": {
+        "enabled": true,
+        "materialized": "view",
+        "tags": ["reporting", "dashboard"]
+      },
+      "tags": ["reporting", "dashboard"],
+      "description": "Summary of product sales metrics",
+      "columns": {
+        "product_id": {
+          "name": "product_id",
+          "description": "Product identifier",
+          "data_type": "integer"
+        },
+        "product_name": {
+          "name": "product_name",
+          "description": "Product name",
+          "data_type": "varchar"
+        },
+        "category": {
+          "name": "category",
+          "description": "Product category",
+          "data_type": "varchar"
+        },
+        "total_quantity_sold": {
+          "name": "total_quantity_sold",
+          "description": "Total quantity sold",
+          "data_type": "integer"
+        },
+        "total_revenue": {
+          "name": "total_revenue",
+          "description": "Total revenue from product",
+          "data_type": "decimal"
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "model.sample_project.products",
+          "model.sample_project.order_items"
+        ]
+      }
+    }
+  },
+  "sources": {
+    "source.sample_project.raw_db.raw_customers": {
+      "database": "raw_data",
+      "schema": "raw_db",
+      "name": "raw_customers",
+      "source_name": "raw_db",
+      "source_description": "Raw database source",
+      "loader": "fivetran",
+      "identifier": "customers",
+      "resource_type": "source",
+      "package_name": "sample_project",
+      "path": "models/sources.yml",
+      "original_file_path": "models/sources.yml",
+      "unique_id": "source.sample_project.raw_db.raw_customers",
+      "fqn": ["sample_project", "raw_db", "raw_customers"],
+      "description": "Raw customer data from production database",
+      "columns": {
+        "id": {
+          "name": "id",
+          "description": "Customer ID",
+          "data_type": "integer"
+        },
+        "email": {
+          "name": "email",
+          "description": "Email address",
+          "data_type": "varchar"
+        }
+      }
+    },
+    "source.sample_project.raw_db.raw_orders": {
+      "database": "raw_data",
+      "schema": "raw_db",
+      "name": "raw_orders",
+      "source_name": "raw_db",
+      "source_description": "Raw database source",
+      "loader": "fivetran",
+      "identifier": "orders",
+      "resource_type": "source",
+      "package_name": "sample_project",
+      "path": "models/sources.yml",
+      "original_file_path": "models/sources.yml",
+      "unique_id": "source.sample_project.raw_db.raw_orders",
+      "fqn": ["sample_project", "raw_db", "raw_orders"],
+      "description": "Raw order data from production database",
+      "columns": {}
+    },
+    "source.sample_project.raw_db.raw_order_items": {
+      "database": "raw_data",
+      "schema": "raw_db",
+      "name": "raw_order_items",
+      "source_name": "raw_db",
+      "source_description": "Raw database source",
+      "loader": "fivetran",
+      "identifier": "order_items",
+      "resource_type": "source",
+      "package_name": "sample_project",
+      "path": "models/sources.yml",
+      "original_file_path": "models/sources.yml",
+      "unique_id": "source.sample_project.raw_db.raw_order_items",
+      "fqn": ["sample_project", "raw_db", "raw_order_items"],
+      "description": "Raw order items data",
+      "columns": {}
+    },
+    "source.sample_project.raw_db.raw_products": {
+      "database": "raw_data",
+      "schema": "raw_db",
+      "name": "raw_products",
+      "source_name": "raw_db",
+      "source_description": "Raw database source",
+      "loader": "fivetran",
+      "identifier": "products",
+      "resource_type": "source",
+      "package_name": "sample_project",
+      "path": "models/sources.yml",
+      "original_file_path": "models/sources.yml",
+      "unique_id": "source.sample_project.raw_db.raw_products",
+      "fqn": ["sample_project", "raw_db", "raw_products"],
+      "description": "Raw product data",
+      "columns": {}
+    }
+  },
+  "macros": {},
+  "docs": {},
+  "exposures": {},
+  "metrics": {},
+  "selectors": {},
+  "disabled": {},
+  "parent_map": {
+    "model.sample_project.customers": [
+      "source.sample_project.raw_db.raw_customers"
+    ],
+    "model.sample_project.orders": [
+      "source.sample_project.raw_db.raw_orders",
+      "model.sample_project.customers"
+    ],
+    "model.sample_project.order_items": [
+      "source.sample_project.raw_db.raw_order_items",
+      "model.sample_project.orders",
+      "model.sample_project.products"
+    ],
+    "model.sample_project.products": [
+      "source.sample_project.raw_db.raw_products"
+    ],
+    "model.sample_project.customer_orders_summary": [
+      "model.sample_project.customers",
+      "model.sample_project.orders"
+    ],
+    "model.sample_project.product_sales_summary": [
+      "model.sample_project.products",
+      "model.sample_project.order_items"
+    ]
+  },
+  "child_map": {
+    "source.sample_project.raw_db.raw_customers": [
+      "model.sample_project.customers"
+    ],
+    "source.sample_project.raw_db.raw_orders": [
+      "model.sample_project.orders"
+    ],
+    "source.sample_project.raw_db.raw_order_items": [
+      "model.sample_project.order_items"
+    ],
+    "source.sample_project.raw_db.raw_products": [
+      "model.sample_project.products"
+    ],
+    "model.sample_project.customers": [
+      "model.sample_project.orders",
+      "model.sample_project.customer_orders_summary"
+    ],
+    "model.sample_project.orders": [
+      "model.sample_project.order_items",
+      "model.sample_project.customer_orders_summary"
+    ],
+    "model.sample_project.products": [
+      "model.sample_project.order_items",
+      "model.sample_project.product_sales_summary"
+    ],
+    "model.sample_project.order_items": [
+      "model.sample_project.product_sales_summary"
+    ]
+  }
+}
