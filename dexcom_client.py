@@ -1,28 +1,36 @@
 """
 Dexcom API Client for downloading CGM data.
-Uses OAuth 2.0 for authentication.
+Uses OAuth 2.0 for authentication with CSRF protection.
 """
 import os
 import webbrowser
+import secrets
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from datetime import datetime, timedelta
 import requests
 from dotenv import load_dotenv
+from secure_storage import SecureStorage
 
 load_dotenv()
 
 
 class OAuthCallbackHandler(BaseHTTPRequestHandler):
-    """Handler for OAuth callback."""
+    """Handler for OAuth callback with CSRF protection."""
 
     authorization_code = None
+    state_token = None
+    received_state = None
 
     def do_GET(self):
         """Handle the OAuth callback GET request."""
         query_components = parse_qs(urlparse(self.path).query)
 
-        if 'code' in query_components:
+        # Validate state parameter to prevent CSRF attacks
+        if 'state' in query_components:
+            OAuthCallbackHandler.received_state = query_components['state'][0]
+
+        if 'code' in query_components and OAuthCallbackHandler.received_state == OAuthCallbackHandler.state_token:
             OAuthCallbackHandler.authorization_code = query_components['code'][0]
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
@@ -32,7 +40,8 @@ class OAuthCallbackHandler(BaseHTTPRequestHandler):
             self.send_response(400)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(b'<html><body><h1>Authentication failed!</h1></body></html>')
+            error_msg = b'<html><body><h1>Authentication failed!</h1><p>Invalid state parameter or missing authorization code.</p></body></html>'
+            self.wfile.write(error_msg)
 
     def log_message(self, format, *args):
         """Suppress log messages."""
@@ -56,7 +65,7 @@ class DexcomClient:
         }
     }
 
-    def __init__(self, environment='sandbox'):
+    def __init__(self, environment='sandbox', use_stored_tokens=True):
         """Initialize the Dexcom client."""
         self.client_id = os.getenv('DEXCOM_CLIENT_ID')
         self.client_secret = os.getenv('DEXCOM_CLIENT_SECRET')
@@ -71,11 +80,37 @@ class DexcomClient:
         self.refresh_token = None
         self.token_expiry = None
 
+        # Try to load stored tokens if available
+        if use_stored_tokens:
+            self._load_stored_tokens()
+
+    def _load_stored_tokens(self):
+        """Load tokens from secure storage if available."""
+        token_data = SecureStorage.get_tokens()
+        if token_data:
+            self.access_token = token_data.get('access_token')
+            self.refresh_token = token_data.get('refresh_token')
+            self.token_expiry = token_data.get('expires_at')
+
+    def _save_tokens(self):
+        """Save tokens to secure storage."""
+        SecureStorage.store_tokens(
+            self.access_token,
+            self.refresh_token,
+            self.token_expiry
+        )
+
     def authenticate(self):
         """
-        Perform OAuth authentication flow.
+        Perform OAuth authentication flow with CSRF protection.
         Opens browser for user to authorize the application.
         """
+        # Generate cryptographically secure random state token for CSRF protection
+        state_token = secrets.token_urlsafe(32)
+        OAuthCallbackHandler.state_token = state_token
+        OAuthCallbackHandler.authorization_code = None
+        OAuthCallbackHandler.received_state = None
+
         # Step 1: Get authorization code
         auth_url = (
             f"{self.endpoints['auth_url']}"
@@ -83,7 +118,7 @@ class DexcomClient:
             f"&redirect_uri={self.redirect_uri}"
             f"&response_type=code"
             f"&scope=offline_access"
-            f"&state=test_state"
+            f"&state={state_token}"
         )
 
         print(f"\nOpening browser for authentication...")
@@ -98,7 +133,7 @@ class DexcomClient:
         authorization_code = OAuthCallbackHandler.authorization_code
 
         if not authorization_code:
-            raise Exception("Failed to get authorization code")
+            raise Exception("Failed to get authorization code - possible CSRF attack or authentication failure")
 
         # Step 2: Exchange authorization code for access token
         token_data = {
@@ -109,8 +144,11 @@ class DexcomClient:
             'redirect_uri': self.redirect_uri
         }
 
-        response = requests.post(self.endpoints['token_url'], data=token_data)
-        response.raise_for_status()
+        try:
+            response = requests.post(self.endpoints['token_url'], data=token_data, timeout=30)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Failed to exchange authorization code for token: {str(e)}")
 
         token_response = response.json()
         self.access_token = token_response['access_token']
@@ -118,7 +156,10 @@ class DexcomClient:
         expires_in = token_response.get('expires_in', 7200)
         self.token_expiry = datetime.now() + timedelta(seconds=expires_in)
 
-        print("Authentication successful!")
+        # Save tokens securely
+        self._save_tokens()
+
+        print("Authentication successful! Tokens stored securely.")
         return True
 
     def _refresh_access_token(self):
@@ -133,13 +174,19 @@ class DexcomClient:
             'grant_type': 'refresh_token'
         }
 
-        response = requests.post(self.endpoints['token_url'], data=token_data)
-        response.raise_for_status()
+        try:
+            response = requests.post(self.endpoints['token_url'], data=token_data, timeout=30)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Failed to refresh access token: {str(e)}")
 
         token_response = response.json()
         self.access_token = token_response['access_token']
         expires_in = token_response.get('expires_in', 7200)
         self.token_expiry = datetime.now() + timedelta(seconds=expires_in)
+
+        # Save refreshed tokens
+        self._save_tokens()
 
         print("Access token refreshed")
 

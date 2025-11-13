@@ -1,25 +1,38 @@
 """
-DuckDB database operations for storing Dexcom CGM data.
+DuckDB database operations for storing Dexcom CGM data with encryption.
 """
 import os
 import duckdb
 import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
+from database_encryption import DataEncryption, set_secure_file_permissions
 
 load_dotenv()
 
 
 class DexcomDatabase:
-    """Database handler for Dexcom CGM data."""
+    """Database handler for Dexcom CGM data with encryption support."""
 
-    def __init__(self, db_path=None):
-        """Initialize database connection."""
+    def __init__(self, db_path=None, enable_encryption=True):
+        """Initialize database connection with encryption."""
         if db_path is None:
             db_path = os.getenv('DUCKDB_PATH', 'dexcom_data.db')
 
         self.db_path = db_path
+        self.enable_encryption = enable_encryption
+
+        # Initialize encryption if enabled
+        self.encryption = DataEncryption() if enable_encryption else None
+
+        # Create database with secure permissions
+        is_new_db = not os.path.exists(db_path)
         self.conn = duckdb.connect(db_path)
+
+        # Set secure file permissions on database
+        if is_new_db:
+            set_secure_file_permissions(db_path)
+
         self._create_tables()
 
     def _create_tables(self):

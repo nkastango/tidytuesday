@@ -251,12 +251,45 @@ Be mindful of Dexcom API rate limits:
 - **Solution**: Set `DEXCOM_ENVIRONMENT=production` in `.env` for real data
 - **Solution**: Set `DEXCOM_ENVIRONMENT=sandbox` for testing
 
-## Security Notes
+## Security
 
-- Never commit your `.env` file to version control
-- Keep your Client Secret secure
-- The access token is stored in memory only during execution
-- Database files may contain health data - protect accordingly
+This application implements comprehensive security measures to protect your sensitive health data:
+
+### Security Features
+
+✅ **CSRF Protection** - OAuth state parameter validation prevents cross-site request forgery
+✅ **Secure Token Storage** - Tokens stored in OS keyring (Keychain/Secret Service/Credential Locker)
+✅ **Database Encryption** - Health data encrypted at rest using Fernet (AES-128)
+✅ **Input Validation** - All inputs validated to prevent injection attacks
+✅ **Secure File Permissions** - Automatic file permission hardening (0600)
+✅ **TLS Encryption** - All API communications use HTTPS/TLS 1.2+
+✅ **No Logging of Secrets** - Credentials and tokens never logged
+
+### Quick Security Setup
+
+```bash
+# Set secure permissions on sensitive files
+chmod 600 .env
+chmod 600 dexcom_data.db
+
+# Verify .env is not tracked by git
+git status --ignored | grep .env
+
+# Check for vulnerable dependencies
+pip install safety
+safety check
+```
+
+### Important Security Notes
+
+- **Never commit `.env`** to version control (already in `.gitignore`)
+- **Protect your Client Secret** like a password
+- **Use full-disk encryption** for maximum protection
+- **OAuth tokens** stored securely in system keyring
+- **Database encrypted** automatically with key in keyring
+- **Database files** contain PHI - treat as sensitive medical records
+
+For detailed security information, see [SECURITY.md](SECURITY.md)
 
 ## Resources
 
